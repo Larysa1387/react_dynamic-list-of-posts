@@ -57,17 +57,17 @@ export const App = () => {
   }, []);
 
   function loadPosts() {
-    setLoading(true);
-    setComments([]);
-    setSelectedPostId(null);
-    setPosts([]);
-    setError('');
-
     if (!userId) {
       setPosts([]);
 
       return;
     }
+
+    setLoading(true);
+    setComments([]);
+    setSelectedPostId(null);
+    setPosts([]);
+    setError('');
 
     getUserPosts(userId)
       .then(data => {
@@ -141,21 +141,17 @@ export const App = () => {
 
   function onDeleteComment(id: number) {
     // Optimistic update
+    const currentComments = comments;
     const updatedComments = comments.filter(comment => comment.id !== id);
 
     setComments(updatedComments);
 
     // Pessimistic update
-    return deletePostComment(id)
-      .then(() => {
-        // const updatedComments = comments.filter(comment => comment.id !== id);
-        // setComments(updatedComments);
-      })
-      .catch(err => {
-        setComments(comments);
-        handleErrorMessage(NotificationType.DELETE_COMMENT);
-        throw err;
-      });
+    return deletePostComment(id).catch(err => {
+      setComments(currentComments);
+      handleErrorMessage(NotificationType.DELETE_COMMENT);
+      throw err;
+    });
   }
 
   const selectedPost: Post | null = selectedPostId
@@ -180,7 +176,7 @@ export const App = () => {
                 {!userId && <p data-cy="NoSelectedUser">No user selected</p>}
                 {loading && <Loader />}
 
-                {error && (
+                {error && !comments.length && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"

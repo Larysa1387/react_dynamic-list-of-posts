@@ -23,9 +23,10 @@ export const NewCommentForm: React.FC<Props> = ({ post, onSubmitForm }) => {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setHasAuthorName(!authorName);
-    setHasAuthorEmail(!authorEmail);
-    setHasCommentBody(!commentBody);
+    setHasAuthorName(!authorName.trim());
+    setHasAuthorEmail(!authorEmail.trim());
+    setHasCommentBody(!commentBody.trim());
+
     if (!authorName.trim() || !authorEmail.trim() || !commentBody.trim()) {
       return;
     }

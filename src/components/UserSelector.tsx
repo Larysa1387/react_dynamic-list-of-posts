@@ -10,7 +10,8 @@ type Props = {
 
 export const UserSelector: React.FC<Props> = ({ users, userId, setUserId }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const selectedUser = users.find(u => u.id === userId) || null;
 
   return (
     <div
@@ -49,7 +50,6 @@ export const UserSelector: React.FC<Props> = ({ users, userId, setUserId }) => {
               onClick={() => {
                 setIsFocused(false);
                 setUserId(user.id);
-                setSelectedUser(user);
               }}
             >
               {user.name}
