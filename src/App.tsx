@@ -34,10 +34,6 @@ export const App: React.FC = () => {
   const [userId, setUserId] = useState<number | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
-  // const handleErrorMessage = (err: string) => {
-  //   setError(err);
-  // };
-
   useEffect(() => {
     setLoading(true);
     getUsers()
