@@ -18,7 +18,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onSubmitForm }) => {
   const [commentBody, setCommentBody] = useState('');
   const [hasCommentBody, setHasCommentBody] = useState(false);
 
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,13 +38,13 @@ export const NewCommentForm: React.FC<Props> = ({ post, onSubmitForm }) => {
     };
     const postID = post ? post.id : 0;
 
-    setIsSubmiting(true);
+    setIsSubmitting(true);
 
     onSubmitForm(newComment, postID)
       .then(() => {
         setCommentBody('');
       })
-      .finally(() => setIsSubmiting(false));
+      .finally(() => setIsSubmitting(false));
   }
 
   function handleAuthorNameChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -135,7 +135,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onSubmitForm }) => {
           {hasAuthorEmail && (
             <span
               className={cls('icon is-small is-right has-text-danger', {
-                'is-hidden': !hasAuthorName,
+                'is-hidden': !hasAuthorEmail,
               })}
               data-cy="ErrorIcon"
             >
@@ -178,7 +178,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onSubmitForm }) => {
         <div className="control">
           <button
             type="submit"
-            className={cls('button is-link', { 'is-loading': isSubmiting })}
+            className={cls('button is-link', { 'is-loading': isSubmitting })}
           >
             Add
           </button>

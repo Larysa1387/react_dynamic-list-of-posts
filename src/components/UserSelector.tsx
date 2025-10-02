@@ -47,7 +47,8 @@ export const UserSelector: React.FC<Props> = ({ users, userId, setUserId }) => {
                 'is-active': userId === user.id,
               })}
               data-cy="UserItem"
-              onClick={() => {
+              onClick={event => {
+                event.preventDefault();
                 setIsFocused(false);
                 setUserId(user.id);
               }}

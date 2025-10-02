@@ -20,27 +20,30 @@ import {
 } from './components/api/postComments';
 import { Comment, CommentData } from './types/Comment';
 
-export const App = () => {
+export const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
+
   const [error, setError] = useState<string>('');
+  const [commentsError, setCommentsError] = useState<string>('');
+
   const [userId, setUserId] = useState<number | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
-  const handleErrorMessage = (err: string) => {
-    setError(err);
-  };
+  // const handleErrorMessage = (err: string) => {
+  //   setError(err);
+  // };
 
   useEffect(() => {
     setLoading(true);
     getUsers()
       .then(data => {
         if (!data) {
-          handleErrorMessage(NotificationType.USERS);
+          setError(NotificationType.USERS);
 
           return;
         }
@@ -48,7 +51,7 @@ export const App = () => {
         setUsers(data);
       })
       .catch(err => {
-        handleErrorMessage(NotificationType.USERS);
+        setError(NotificationType.USERS);
         throw err;
       })
       .finally(() => {
@@ -72,7 +75,7 @@ export const App = () => {
     getUserPosts(userId)
       .then(data => {
         if (!data || (typeof data === 'object' && 'error' in data)) {
-          handleErrorMessage(NotificationType.POSTS);
+          setError(NotificationType.POSTS);
 
           return;
         }
@@ -80,7 +83,7 @@ export const App = () => {
         setPosts(data);
       })
       .catch(err => {
-        handleErrorMessage(NotificationType.POSTS);
+        setError(NotificationType.POSTS);
         throw err;
       })
       .finally(() => setLoading(false));
@@ -92,13 +95,13 @@ export const App = () => {
     }
 
     setCommentsLoading(true);
-    setError('');
+    setCommentsError('');
     setComments([]);
 
     getPostComments(selectedPostId)
       .then(data => {
         if (!data) {
-          handleErrorMessage(NotificationType.COMMENTS);
+          setCommentsError(NotificationType.COMMENTS);
 
           return;
         }
@@ -106,7 +109,7 @@ export const App = () => {
         setComments(data);
       })
       .catch(err => {
-        handleErrorMessage(NotificationType.COMMENTS);
+        setCommentsError(NotificationType.COMMENTS);
         throw err;
       })
       .finally(() => setCommentsLoading(false));
@@ -124,7 +127,7 @@ export const App = () => {
     return addNewPostComment(newComment)
       .then(data => {
         if (!data) {
-          handleErrorMessage(NotificationType.ADD_COMMENT);
+          setCommentsError(NotificationType.ADD_COMMENT);
 
           return;
         }
@@ -134,14 +137,14 @@ export const App = () => {
         }
       })
       .catch(err => {
-        handleErrorMessage(NotificationType.ADD_COMMENT);
+        setCommentsError(NotificationType.ADD_COMMENT);
         throw err;
       });
   }
 
   function onDeleteComment(id: number) {
     // Optimistic update
-    const currentComments = comments;
+    const currentComments = [...comments];
     const updatedComments = comments.filter(comment => comment.id !== id);
 
     setComments(updatedComments);
@@ -149,7 +152,7 @@ export const App = () => {
     // Pessimistic update
     return deletePostComment(id).catch(err => {
       setComments(currentComments);
-      handleErrorMessage(NotificationType.DELETE_COMMENT);
+      setCommentsError(NotificationType.DELETE_COMMENT);
       throw err;
     });
   }
@@ -176,7 +179,7 @@ export const App = () => {
                 {!userId && <p data-cy="NoSelectedUser">No user selected</p>}
                 {loading && <Loader />}
 
-                {error && !comments.length && (
+                {error && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -210,7 +213,7 @@ export const App = () => {
               <div className="tile is-child box is-success ">
                 <PostDetails
                   comments={comments}
-                  error={error}
+                  error={commentsError}
                   post={selectedPost}
                   selectedPostId={selectedPostId}
                   onSubmitForm={onAddNewComment}
